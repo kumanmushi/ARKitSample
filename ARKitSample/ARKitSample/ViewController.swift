@@ -14,6 +14,9 @@ class ViewController: UIViewController, ARSCNViewDelegate {
 
     @IBOutlet var sceneView: ARSCNView!
     
+    // Create a new scene
+    let scene = SCNScene(named: "art.scnassets/ship.scn")!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -23,11 +26,10 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         // Show statistics such as fps and timing information
         sceneView.showsStatistics = true
         
-        // Create a new scene
-        let scene = SCNScene(named: "art.scnassets/ship.scn")!
-        
         // Set the scene to the view
-        sceneView.scene = scene
+        sceneView.scene = self.scene
+        
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -88,8 +90,12 @@ class ViewController: UIViewController, ARSCNViewDelegate {
                                          hitTransform.m42,
                                          hitTransform.m43)
         
-        let cubeNode = SCNNode(geometry: SCNBox(width: 0.1, height: 0.1, length: 0.1, chamferRadius: 0))
-        cubeNode.position = hitPosition
-        sceneView.scene.rootNode.addChildNode(cubeNode)
+        let shipNode = self.scene.rootNode.childNode(withName: "ship", recursively: true)
+//        shipNode?.position = hitPosition
+        shipNode?.runAction(SCNAction.repeatForever(SCNAction.rotateBy(x: 0, y: 2, z: 0, duration: 1)))
+        
+//        let cubeNode = SCNNode(geometry: SCNBox(width: 0.1, height: 0.1, length: 0.1, chamferRadius: 0))
+//        cubeNode.position = hitPosition
+//        sceneView.scene.rootNode.addChildNode(cubeNode)
     }
 }
