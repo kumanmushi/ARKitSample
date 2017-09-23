@@ -35,7 +35,8 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         // Create a session configuration
         let configuration = ARWorldTrackingConfiguration()
-
+        configuration.planeDetection = .horizontal
+        
         // Run the view's session
         sceneView.session.run(configuration)
     }
@@ -76,5 +77,19 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     func sessionInterruptionEnded(_ session: ARSession) {
         // Reset tracking and/or remove existing anchors if consistent tracking is required
         
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let touch = touches.first else { return }
+        let results = sceneView.hitTest(touch.location(in: sceneView), types: [ARHitTestResult.ResultType.featurePoint])
+        guard let hitFeature = results.last else { return }
+        let hitTransform = SCNMatrix4(hitFeature.worldTransform)
+        let hitPosition = SCNVector3Make(hitTransform.m41,
+                                         hitTransform.m42,
+                                         hitTransform.m43)
+        
+        let cubeNode = SCNNode(geometry: SCNBox(width: 0.1, height: 0.1, length: 0.1, chamferRadius: 0))
+        cubeNode.position = hitPosition
+        sceneView.scene.rootNode.addChildNode(cubeNode)
     }
 }
